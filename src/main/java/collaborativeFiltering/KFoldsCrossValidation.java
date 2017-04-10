@@ -71,7 +71,7 @@ public class KFoldsCrossValidation {
                 }
                 userId[line_index] = Integer.parseInt(part[0].replaceAll("[\\D]", ""));//repalce non digit with blank
                 itemId[line_index] = Integer.parseInt(part[1].replaceAll("[\\D]", ""));
-                rating[line_index] = Double.parseDouble(part[2].replaceAll("[\\D]", ""));
+                rating[line_index] = Double.parseDouble(part[2].replaceAll("[\\D]", ""))/10.0;
                 if (maxUserId < userId[line_index]) {
                     maxUserId = userId[line_index];
                 }
@@ -139,7 +139,7 @@ public class KFoldsCrossValidation {
             }
         }
         for (int f = 1; f < k_folds + 1; f++) {
-            String testingRatinsFile = dataset + "m1m_ratings_per_user/" + u + "_testing_" + f + ".dat";
+            String testingRatinsFile = dataset + "anime_ratings_per_user/" + u + "_testing_" + f + ".dat";
             BufferedWriter testing_bW = new BufferedWriter(new FileWriter(testingRatinsFile));
             if (testingSet[f].getUserItemRatingList() != null) {
                 List<UserItemRating> testing_list = testingSet[f].getUserItemRatingList();
@@ -151,7 +151,7 @@ public class KFoldsCrossValidation {
                 testing_bW.close();
             }
             //It writes the training files
-            String trainingRatinsFile = dataset + "m1m_ratings_per_user/" + u + "_training_" + f + ".dat";
+            String trainingRatinsFile = dataset + "anime_ratings_per_user/" + u + "_training_" + f + ".dat";
             BufferedWriter training_bW = new BufferedWriter(new FileWriter(trainingRatinsFile));
             if (trainingSet[f].getUserItemRatingList() != null) {
                 List<UserItemRating> training_list = trainingSet[f].getUserItemRatingList();

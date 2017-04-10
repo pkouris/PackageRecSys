@@ -19,14 +19,13 @@ import entityGraphClasses.VertexSource_v2;
 import static recommend_and_evaluation.A_Start.movies_hashTable;
 import static recommend_and_evaluation.A_Start.ratingsPerUser_hashTable;
 import static recommend_and_evaluation.A_Start.selectedUserID;
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JOptionPane;
+import static recommend_and_evaluation.D_ItemsAllocationToCategories.numOfItemsPerPackage;
 
 /**
  * @author Panagiotis Kouris
@@ -43,18 +42,18 @@ public class C_ProblemModeling {
     //static public List<VertexItem> vertexItemHedden_list = new ArrayList<>();
     static public List<CategoryPopularityOverallRating> categoriesPopularity_list = new ArrayList<>();
     //Parameters
-    static public int numOfTopCategories = 4; //it can change via user interface, default value is 4
-    static public int numOfPackages = 5;
+    static public int numOfTopCategories = 3; //it can change via user interface, default value is 4
+    static public int numOfPackages = 10;
     static public int numOfItemsPerCategory = 1;
     static public int numOfMaxAppearancesPerItem = -1; //-1:it is not taken into account, 0: read from file, 1,2,3...: it appears 1 or 2 ... times  
-    static public int modelOfCreatingPackages = 1;
+    static public int modelOfCreatingPackages = 2;
     static public VertexSource_v2 vertexSource;
     static public VertexSink_v2 vertexSink;
     static public Integer[] itemsAllocationToCategories = null;
-    static public int categoryPopularity_mode = 0;
+    static public int categoryPopularity_mode = 1;
     static public String categoryPopularity_mode_str = "Based on the number of items per category";
-    static public int packageSize = 0;
-    static public double packageCost = 200.0; //for movies it is minutes 
+    static public int packageSize = 0; //if package Size>0 then the items are allocated to categories proportionally
+    static public double packageCost = 60.0; //for movies it is minutes 
 
     public C_ProblemModeling() {
     }
@@ -105,7 +104,7 @@ public class C_ProblemModeling {
     public void loadGraph(int userId) {
         try {
             if (numOfItemsPerCategory == 0) {
-                if (packageSize > formsAndFunctionality.ItemsAllocationToCategoriesForm.numOfItemsPerPackage) {
+                if (packageSize > numOfItemsPerPackage) {
                     packageSize = 0;
                 }
             } else if (packageSize > numOfItemsPerCategory * numOfTopCategories) {
@@ -227,8 +226,6 @@ public class C_ProblemModeling {
                 //////////////////////
             }
         } catch (Exception e) {
-            Component frame = null;
-            JOptionPane.showMessageDialog(frame, "Error: loadTopCategories() " + e, "Message", JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
             return;
         }
@@ -250,11 +247,6 @@ public class C_ProblemModeling {
                 vertexItemOfTopCategories_list.add(vertexMovie);
             }
         }
-        //set movieIndex
-        int size = vertexItemOfTopCategories_list.size();
-        //   for (int i = 0; i < size; i++) {
-        //      vertexMovieOfTopCategories_list.get(i).setMovieIndex(i + 1);
-        //  }
     }
 
     public void loadSourceSinkNodesOfTopCategories() {
@@ -265,7 +257,7 @@ public class C_ProblemModeling {
         while (itrC.hasNext()) {
             VertexCategory_v2 vertexCategory_temp = new VertexCategory_v2();
             vertexCategory_temp = itrC.next();
-            String categoryID = vertexCategory_temp.getCategoryID();
+            //String categoryID = vertexCategory_temp.getCategoryID();
             EdgeCategorySink_v2 edgeCategorySink = new EdgeCategorySink_v2();
             edgeCategorySink = vertexCategory_temp.getEdgeCategorySink();
             edgeCategorySink_list.add(edgeCategorySink);
@@ -306,10 +298,13 @@ public class C_ProblemModeling {
                 double rating = movieRating_temp.getRating();
                 double flow_cost = 1.0 / ((double) rating);
                 double item_cost = movieRating_temp.getCost();
+                ////////////////////////////////
+                //System.out.println("item_cost## " + item_cost);
                 int maxFlow = 1;
                 int minFlow = 0;
                 //Movie movie = new Movie();
                 Item_withCost movie = movies_hashTable.get(movieID);
+                //double item_cost = movie.getCost();
                 String[] genres = movie.getCategories();
                 int numOfMaxAppearances = movie.getNumOfMaxAppearances();
 
@@ -320,15 +315,23 @@ public class C_ProblemModeling {
                 for (String category : genres) {
                     EdgeItemCategory_v2 edgeMovieCategory_temp = new EdgeItemCategory_v2(movieID, category, rating, flow_cost, item_cost, maxFlow, minFlow);
                     edgeMovieCategory_list.add(edgeMovieCategory_temp);
+                    
                 }
                 //creating the edge movie-source
-                EdgeItemSource_v2 edgeMovieSource = new EdgeItemSource_v2(movieID, 0, 0, 1, 0);
+                EdgeItemSource_v2 edgeMovieSource = new EdgeItemSource_v2(movieID, 0.0, 0.0, 1, 0);
 
                 //movieIndex++; //the position of movie in the list, movieIndex = {1, 2, 3,...}
                 //creating the vertex of this film
                 VertexItem_v2 vertexMovie = new VertexItem_v2(movieID, numOfMaxAppearances, edgeMovieCategory_list, edgeMovieSource);
                 //Add the vertex of movie to the vertexMovie_list
                 vertexItem_list.add(vertexMovie);
+                ///////////////////////
+                //int si = vertexMovie.getEdgeItemCategory_list().size();
+               // for (int k=0; k<si; k++){
+               // System.out.println("itemID## " + vertexMovie.getEdgeItemCategory_list().get(k).getItemID()
+               // + "item cost## " + vertexMovie.getEdgeItemCategory_list().get(k).getItem_cost());
+               // }
+                /////////////////////////////////
 
                 //creating the category nodes
                 for (String category : genres) {
@@ -340,7 +343,7 @@ public class C_ProblemModeling {
                         //edgeMovieCategory_list_temp = vertexCategory.getEdgeMovieCategory_list();
                         EdgeItemCategory_v2 edgeMovieCategory_2 = new EdgeItemCategory_v2(movieID, category, rating, flow_cost, item_cost, maxFlow, minFlow);
                         edgeMovieCategory_list_temp.add(edgeMovieCategory_2);
-                        EdgeCategorySink_v2 edgeCategorySink = new EdgeCategorySink_v2(category, 0, 0, numOfItemsPerCategory, numOfItemsPerCategory);///////////
+                        EdgeCategorySink_v2 edgeCategorySink = new EdgeCategorySink_v2(category, 0.0, 0.0, numOfItemsPerCategory, numOfItemsPerCategory);///////////
                         VertexCategory_v2 vc = new VertexCategory_v2(category, edgeMovieCategory_list_temp, edgeCategorySink);
                         vertexCategory_list.add(vc);
                     } else {
@@ -381,7 +384,7 @@ public class C_ProblemModeling {
             while (itrC.hasNext()) {
                 //VertexCategory vertexCategory_temp = new VertexCategory();
                 VertexCategory_v2 vertexCategory_temp = itrC.next();
-                String categoryID = vertexCategory_temp.getCategoryID();
+                //String categoryID = vertexCategory_temp.getCategoryID();
 
                 //EdgeCategorySink edgeCategorySink = new EdgeCategorySink();
                 EdgeCategorySink_v2 edgeCategorySink = vertexCategory_temp.getEdgeCategorySink();
@@ -416,8 +419,6 @@ public class C_ProblemModeling {
             });
 
         } catch (Exception e) {
-            Component frame = null;
-            JOptionPane.showMessageDialog(frame, "Error: createGraph() " + e, "Message", JOptionPane.WARNING_MESSAGE);
             e.printStackTrace();
             return;
         }
@@ -440,13 +441,9 @@ public class C_ProblemModeling {
     }
 
     public void printItemNodes(List<VertexItem_v2> vertexItem_list) {
-        //Integer b = tb_movieNodes.getRowCount();
-        //for (int i = 0; i < b; i++) {
-        //((DefaultTableModel) tb_movieNodes.getModel()).removeRow(0);
-        //}
         int numOfMovieNodes = 0;
         Iterator<VertexItem_v2> itr = vertexItem_list.iterator();
-        System.out.println("\nItem Nodes:\nnumOfMovieNodes, movieID, sourceMovieEdge_text, movieGenreEdge_text");
+        System.out.println("\nItem Nodes:\nno, movieID, sourceMovieEdge[flow cost, item cost, max flow, min flow], movieGenreEdge[category, rating, flowCost, itemCost, maxFlow, minFlow]");
         while (itr.hasNext()) {
             //VertexItem vertexMovie_temp = new VertexItem();
             VertexItem_v2 vertexMovie_temp = itr.next();
@@ -504,14 +501,9 @@ public class C_ProblemModeling {
     }
 
     public void printCategoryNodes(List<VertexCategory_v2> vertexCategory_list) {
-        // Integer b = tb_categoryNodes.getRowCount();
-        //for (int i = 0; i < b; i++) {
-        //((DefaultTableModel) tb_categoryNodes.getModel()).removeRow(0);
-        //}
-
         Iterator<VertexCategory_v2> itr = vertexCategory_list.iterator();
         int numOfCategoryNodes = 0;
-        System.out.println("\nCategory Nodes:\nnumOfCategoryNodes, categoryID, moviesPerCategory, categorySinkEdge_text, movieCategoryEdge_text");
+        System.out.println("\nCategory Nodes:\nno, categoryID, moviesPerCategory, categorySinkEdge_text, movieCategoryEdge_text");
         while (itr.hasNext()) {
             VertexCategory_v2 vertexCategory_temp = new VertexCategory_v2();
             vertexCategory_temp = itr.next();
@@ -600,7 +592,7 @@ public class C_ProblemModeling {
                     + ", " + maxFlow
                     + ",  " + minFlow + "] ";
         }
-        System.out.println("\nSource Node:\nsourceSinkEdge_text, movieSourceEdge_text");
+        System.out.println("\nSource Node:\nsourceSinkEdge[flow_cost, max flow, min flow], movieSourceEdge[itemId, flow_cost, item_cost, max_flow, Min_flow]");
         System.out.println(sourceSinkEdge_text + "," + movieSourceEdge_text);
     }
 

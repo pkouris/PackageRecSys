@@ -8,8 +8,8 @@ package entityBasicClasses;
 
 
 /**
- * @author: Panagiotis Kouris
- * date: Nov 2015
+ * @author Panagiotis Kouris
+ * @date Mar 2017
  */
 
 public class ItemForPackage_v2 {

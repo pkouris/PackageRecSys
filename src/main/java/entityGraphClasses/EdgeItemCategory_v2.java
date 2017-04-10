@@ -22,6 +22,7 @@ public class EdgeItemCategory_v2 {
         this.categoryID = categoryID;
         this.rating = rating;
         this.flow_cost = flow_cost;
+        this.item_cost = item_cost;
         this.maxFlow = maxFlow;
         this.minFlow = minFlow;
     }

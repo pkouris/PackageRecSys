@@ -1,4 +1,5 @@
 .idea/*
+PackageRecSys.iml
 /target/
 nbactions.xml
 nb-configuration.xml

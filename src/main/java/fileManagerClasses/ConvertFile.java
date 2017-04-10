@@ -1,4 +1,3 @@
-
 package fileManagerClasses;
 
 import java.awt.Component;
@@ -12,16 +11,78 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
- * @author: Panagiotis Kouris
- * date: Dec 2015
+ * @author: Panagiotis Kouris date: Dec 2015
  */
 public class ConvertFile {
 
     public ConvertFile() {
     }
-    
-    
+
     //It converts file to mahout format
+    public String convertAnimeRatignsFile() {
+        int NumOfRatings = 1000000;
+        String convertedFileName = "";
+        String line = "";
+        try {
+            String inputFileName = recommend_and_evaluation.A_Start.dataset + "anime/rating.dat";
+            //removing the extension from inpute file and adding "_converted.dat"
+            int len = inputFileName.length();
+            for (int i = 0; i < len; i++) {
+                char c = inputFileName.charAt(i);
+                if (c == '.') {
+                    break;
+                }
+                convertedFileName += c;
+            }
+            convertedFileName += "_converted.dat";
+
+            //String inputFile = "C:\\movie_datasets\\ml1m\\ratings.dat";
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFileName));
+            BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(convertedFileName));
+            
+            int count = 0;
+            while ((line = bufferedReader.readLine()) != null) {
+                int length = line.length();
+                String[] part = new String[]{"", "", ""};
+                int countOfPart = 0;
+                int index = 0;
+                while (countOfPart < 3 && index<length) {
+                    char c = line.charAt(index);
+                    if (c == ',') {
+                        countOfPart++;
+                    } else if (countOfPart == 0) {
+                        part[0] += c;
+                    } else if (countOfPart == 1) {
+                        part[1] += c;
+                    } else if (countOfPart == 2) {
+                        part[2] += c;
+                    }
+                    index++;
+                }
+                
+                //String[] values = line.split("::", -1);
+                
+                
+                if (!part[2].equals("-1") && !part[2].equals("") && !part[2].equals("rating")) {
+                    int rating = Integer.parseInt(part[2].replaceAll("[\\D]", ""));//repalce non digit with blank
+                    bufferWriter.write(part[0] + "," + part[1] + "," + (5.0*rating/10.0) + "\n");
+                    count++;
+                }
+                if (count>NumOfRatings){
+                    break;
+                }
+            }
+            bufferedReader.close();
+            bufferWriter.close();
+            return convertedFileName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("error in line: " + line);
+        }
+        return convertedFileName;
+    }
+    //It converts file to mahout format
+
     public String converRatignsFile(String inputFileName) {
         String convertedFileName = "";
         //removing the extension from inpute file and adding "_converted.dat"
@@ -78,10 +139,7 @@ public class ConvertFile {
         return convertedFileName;
     }
 
-
-    
-    
-      //It converts file to mahout format
+    //It converts file to mahout format
     public String converItemsFile(String inputFileName) {
         String convertedFileName = "";
         //removing the extension from inpute file and adding "_converted.dat"
@@ -100,35 +158,35 @@ public class ConvertFile {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 // String[] part = new String[]{"", "", ""};
-                 String[] part = line.split("::");
-                 if (part!=null && part.length > 2) {
-                     String movieId = part[0].replaceAll("[\\D]", "");
-                     String title = part[1];
-                     String genres = part[2];//part[2].split("\\|");
-                     //int numOfGenres = genres.length;
-                     //////////////////////
-                     //System.out.println("part.length= " +part.length);
-                     String numOfMaxAppearances;
-                     if (part.length > 3) {
-                         numOfMaxAppearances = part[3];
-                     } else {
-                         numOfMaxAppearances = "";
-                     }
-                     
+                String[] part = line.split("::");
+                if (part != null && part.length > 2) {
+                    String movieId = part[0].replaceAll("[\\D]", "");
+                    String title = part[1];
+                    String genres = part[2];//part[2].split("\\|");
+                    //int numOfGenres = genres.length;
+                    //////////////////////
+                    //System.out.println("part.length= " +part.length);
+                    String numOfMaxAppearances;
+                    if (part.length > 3) {
+                        numOfMaxAppearances = part[3];
+                    } else {
+                        numOfMaxAppearances = "";
+                    }
+
                     //bufferWriter.write(part[0] + "," + part[1] + "," + part[2] + "\n");
                     bufferWriter.write(movieId + "#" + title + "#" + genres + "#" + numOfMaxAppearances + "\n");
-                     //////////////////////
-                     //System.out.println("numOfAppearances= " + numOfMaxAppearances );
-                     ////////////////////
-                     //////////////////////
-                     //System.out.println("movies_hashTable.get(movieId).get(movieID).getNumOfMaxAppearances() = " + movies_hashTable.get(movieID).getNumOfMaxAppearances() );
-                     ////////////////////  
-                 }
+                    //////////////////////
+                    //System.out.println("numOfAppearances= " + numOfMaxAppearances );
+                    ////////////////////
+                    //////////////////////
+                    //System.out.println("movies_hashTable.get(movieId).get(movieID).getNumOfMaxAppearances() = " + movies_hashTable.get(movieID).getNumOfMaxAppearances() );
+                    ////////////////////  
+                }
             }
             bufferedReader.close();
             bufferWriter.close();
         } catch (IOException e) {
-             e.printStackTrace();
+            e.printStackTrace();
             Component frame = null;
             JOptionPane.showMessageDialog(frame, "Select a valid item file please!", "Message", JOptionPane.ERROR_MESSAGE);
             //Logger.getLogger(ReadFiles.class.getName()).log(Level.SEVERE, null, e);
@@ -143,9 +201,7 @@ public class ConvertFile {
         return convertedFileName;
     }
 
-
-    
- /*   
+    /*   
         //read items from file
      public void readMovies(String path) {
          try (BufferedReader bufferedReader = new BufferedReader(new FileReader(path))) {
@@ -202,8 +258,5 @@ public class ConvertFile {
     }
 
      
-  */  
-    
-
-
+     */
 }

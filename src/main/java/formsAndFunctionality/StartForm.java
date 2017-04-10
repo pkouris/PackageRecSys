@@ -4,12 +4,13 @@ import collaborativeFiltering.CFinWholeDataset;
 import collaborativeFiltering.KFoldsCrossValidation;
 import entityBasicClasses.Item;
 import entityBasicClasses.ItemRating;
-import recommend_and_evaluation.A_Start;
 import fileManagerClasses.AddCostToItems;
 import fileManagerClasses.ConvertFile;
 import fileManagerClasses.ReadFiles;
 import java.awt.Component;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -21,19 +22,26 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import popularityApproach.EvaluationPopularityApproach;
 
 /**
- * @author: Panagiotis Kouris 
- * date: Nov 2015
+ * @author: Panagiotis Kouris date: Nov 2015
  */
 public class StartForm extends javax.swing.JFrame {
-    static public String lin_dataset ="/home/pkouris/Dropbox/EMP_DID_dropbox/PackageRecSys/Dataset/"; 
-    static public String win_dataset = "E:/Dropbox/EMP_DID_dropbox/PackageRecSys/Dataset/";
-    
+
+    static public String lin_dataset = "/home/pkouris/Dropbox/EMP_DID_dropbox/PackageRecSys/Dataset/";
+    static public String win_dataset = "E:/Dataset/";
+
     static public String dataset = win_dataset; //It should be changed according to pc
     static public int selectedUserID = 1;
-    static public String ratingsDataFile = dataset + "m1m/ratings_converted.dat"; //default value
-    static public String itemsDataFile = dataset + "m1m/movies_converted_withCost.dat"; //default value
+
+    //static public String ratingsDataFile = dataset + "m1m/ratings_converted.dat"; //default value
+    //static public String itemsDataFile = dataset + "m1m/movies_converted_withDuration.dat"; //default value
+    //static public String morePopularItemsDataFile = dataset + "m1m/movies_morePopular.dat"; //default value
+    static public String ratingsDataFile = dataset + "anime/ratings_converted.dat"; //default value
+    static public String itemsDataFile = dataset + "anime/items_converted_withDuration.dat"; //default value
+    static public String morePopularItemsDataFile = dataset + "anime/items_morePopular.dat"; //default value
+
     static int minItemsPrint = 0;
     static int maxItemsPrint = 100;
     static int minRatingPrint = 0;
@@ -88,7 +96,14 @@ public class StartForm extends javax.swing.JFrame {
         cfInWholeDataset = new javax.swing.JMenuItem();
         addCostToDatasetRandomly = new javax.swing.JMenuItem();
         kFoldsCrossValidation = new javax.swing.JMenuItem();
-        A_Start = new javax.swing.JMenuItem();
+        writeFileWithUsersForEvaluation = new javax.swing.JMenuItem();
+        addDurationToMovies = new javax.swing.JMenuItem();
+        morePopularItems = new javax.swing.JCheckBoxMenuItem();
+        ConvertAnimeRatingFile = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        Evaluation = new javax.swing.JMenuItem();
+        EvaluationOfGreedyAlgorithm = new javax.swing.JMenuItem();
+        EvaluationPopularityApproach = new javax.swing.JMenuItem();
         menu_about = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -198,7 +213,7 @@ public class StartForm extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(66, 66, 66)
                         .addComponent(jButton1)))
@@ -295,7 +310,7 @@ public class StartForm extends javax.swing.JFrame {
                     .addComponent(bt_sortItemsByItemId)
                     .addComponent(bt_sortItemsByPopularity))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
                 .addGap(22, 22, 22))
         );
 
@@ -458,15 +473,68 @@ public class StartForm extends javax.swing.JFrame {
         });
         addCostToItems.add(kFoldsCrossValidation);
 
-        A_Start.setText("A_Start");
-        A_Start.addActionListener(new java.awt.event.ActionListener() {
+        writeFileWithUsersForEvaluation.setText("Write file with users for evaluation");
+        writeFileWithUsersForEvaluation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                A_StartActionPerformed(evt);
+                writeFileWithUsersForEvaluationActionPerformed(evt);
             }
         });
-        addCostToItems.add(A_Start);
+        addCostToItems.add(writeFileWithUsersForEvaluation);
+
+        addDurationToMovies.setText("add duration to movies");
+        addDurationToMovies.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addDurationToMoviesActionPerformed(evt);
+            }
+        });
+        addCostToItems.add(addDurationToMovies);
+
+        morePopularItems.setSelected(true);
+        morePopularItems.setText("Write more popylar items to file");
+        morePopularItems.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                morePopularItemsActionPerformed(evt);
+            }
+        });
+        addCostToItems.add(morePopularItems);
+
+        ConvertAnimeRatingFile.setText("Convert Anime Ratings File");
+        ConvertAnimeRatingFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ConvertAnimeRatingFileActionPerformed(evt);
+            }
+        });
+        addCostToItems.add(ConvertAnimeRatingFile);
 
         jMenuBar1.add(addCostToItems);
+
+        jMenu1.setText("Evaluation");
+
+        Evaluation.setText("Evaluation optimal Approach");
+        Evaluation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EvaluationActionPerformed(evt);
+            }
+        });
+        jMenu1.add(Evaluation);
+
+        EvaluationOfGreedyAlgorithm.setText("Evaluation Greedy Approach");
+        EvaluationOfGreedyAlgorithm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EvaluationOfGreedyAlgorithmActionPerformed(evt);
+            }
+        });
+        jMenu1.add(EvaluationOfGreedyAlgorithm);
+
+        EvaluationPopularityApproach.setText("Evaluation Popularity Approach");
+        EvaluationPopularityApproach.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EvaluationPopularityApproachActionPerformed(evt);
+            }
+        });
+        jMenu1.add(EvaluationPopularityApproach);
+
+        jMenuBar1.add(jMenu1);
 
         menu_about.setText("About");
         menu_about.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -489,7 +557,7 @@ public class StartForm extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 770, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -550,7 +618,7 @@ public class StartForm extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowOpened
 
     private void bt_sortRatingsByNumOfRatingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_sortRatingsByNumOfRatingsActionPerformed
-        ReadFiles  readFiles = new  ReadFiles();
+        ReadFiles readFiles = new ReadFiles();
         readFiles.sortRatingsPerUserList(0);
         initialStaticValues();
         this.printRatings();
@@ -562,7 +630,7 @@ public class StartForm extends javax.swing.JFrame {
 
     private void menu_convertRatingsToMahoutFormatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_convertRatingsToMahoutFormatActionPerformed
         /////////////////// 
-       // System.out.println("Convert...");
+        // System.out.println("Convert...");
         ConvertFile convertFile = new ConvertFile();
         //convertFile.converRatignsFileToMahoutFormat(this.tx_ratingsFile.getText());
         ratingsDataFile = convertFile.converRatignsFile(this.tx_ratingsFile.getText());
@@ -570,7 +638,7 @@ public class StartForm extends javax.swing.JFrame {
             this.tx_ratingsFile.setText(ratingsDataFile);
         }
         //////////////
-       // System.out.println("Converted");
+        // System.out.println("Converted");
     }//GEN-LAST:event_menu_convertRatingsToMahoutFormatActionPerformed
 
     private void bt_sortItemsByItemIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_sortItemsByItemIdActionPerformed
@@ -578,7 +646,7 @@ public class StartForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bt_sortItemsByItemIdActionPerformed
 
     private void bt_sortItemsByPopularityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_sortItemsByPopularityActionPerformed
-       printAllMovies(1);
+        printAllMovies(1);
     }//GEN-LAST:event_bt_sortItemsByPopularityActionPerformed
 
     private void bt_sortingRatingsByUserIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bt_sortingRatingsByUserIdActionPerformed
@@ -589,7 +657,7 @@ public class StartForm extends javax.swing.JFrame {
     }//GEN-LAST:event_bt_sortingRatingsByUserIdActionPerformed
 
     private void menu_convertItemsFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_convertItemsFileActionPerformed
-         ConvertFile convertFile = new ConvertFile();
+        ConvertFile convertFile = new ConvertFile();
         //convertFile.converRatignsFileToMahoutFormat(this.tx_ratingsFile.getText());
         itemsDataFile = convertFile.converItemsFile(this.tx_itemsFile.getText());
         if (!itemsDataFile.equals("")) {
@@ -611,41 +679,78 @@ public class StartForm extends javax.swing.JFrame {
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
         if (n == 0) {
-             System.exit(0);
+            System.exit(0);
             //this.dispose();
         }
     }//GEN-LAST:event_menu_exitActionPerformed
 
     private void cfInWholeDatasetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cfInWholeDatasetActionPerformed
-       ratingsDataFile = this.tx_ratingsFile.getText();
-       CFinWholeDataset cfwd = new CFinWholeDataset();
-        try {
-            cfwd.cf_inWholeDatasetPerUser(ratingsDataFile, 101, 200);
-        } catch (IOException ex) {
-            Logger.getLogger(StartForm.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        ratingsDataFile = this.tx_ratingsFile.getText();
+        CFinWholeDataset cfwd = new CFinWholeDataset();
+        cfwd.applyCollaborativeFiltering();
     }//GEN-LAST:event_cfInWholeDatasetActionPerformed
 
     private void addCostToDatasetRandomlyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCostToDatasetRandomlyActionPerformed
-       itemsDataFile = this.tx_itemsFile.getText();
-       AddCostToItems acti = new AddCostToItems();
-       acti.addCostToItemsRandomly(itemsDataFile, 60, 120);
+        itemsDataFile = this.tx_itemsFile.getText();
+        AddCostToItems acti = new AddCostToItems();
+        acti.addCostToItemsRandomly(itemsDataFile, 60, 120);
     }//GEN-LAST:event_addCostToDatasetRandomlyActionPerformed
 
     private void kFoldsCrossValidationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kFoldsCrossValidationActionPerformed
-       ratingsDataFile = this.tx_ratingsFile.getText();
-       KFoldsCrossValidation kfcv = new KFoldsCrossValidation();
-       kfcv.ProduceKFoldsRandomly(5, 40, 1100001, 7001);
+        ratingsDataFile = this.tx_ratingsFile.getText();
+        KFoldsCrossValidation kfcv = new KFoldsCrossValidation();
+        kfcv.ProduceKFoldsRandomly(5, 40, 1000100, 12500);
     }//GEN-LAST:event_kFoldsCrossValidationActionPerformed
 
-    private void A_StartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_A_StartActionPerformed
+    private void EvaluationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EvaluationActionPerformed
         try {
-            A_Start as=new A_Start();
-            as.evaluationForUser(1, 1);
+            recommend_and_evaluation.F_Evaluation ev = new recommend_and_evaluation.F_Evaluation();
+            ev.runEvaluation();
         } catch (IOException ex) {
             Logger.getLogger(StartForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_A_StartActionPerformed
+    }//GEN-LAST:event_EvaluationActionPerformed
+
+    private void EvaluationOfGreedyAlgorithmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EvaluationOfGreedyAlgorithmActionPerformed
+        try {
+            greedyApproach.EvaluationGreedyApproach evg = new greedyApproach.EvaluationGreedyApproach();
+            evg.runEvaluation();
+        } catch (IOException ex) {
+            Logger.getLogger(StartForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_EvaluationOfGreedyAlgorithmActionPerformed
+
+    private void writeFileWithUsersForEvaluationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeFileWithUsersForEvaluationActionPerformed
+        fileManagerClasses.ProduceFileWithUsersForEvaluation p = new fileManagerClasses.ProduceFileWithUsersForEvaluation();
+        try {
+            p.writeFileWithUserIdAndRatings();
+        } catch (IOException ex) {
+            Logger.getLogger(StartForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_writeFileWithUsersForEvaluationActionPerformed
+
+    private void addDurationToMoviesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDurationToMoviesActionPerformed
+        fileManagerClasses.AddCostToItems a = new AddCostToItems();
+        a.retrieveDurationOfMovies(dataset + "m1m/movies_converted_withoutYear.dat");
+    }//GEN-LAST:event_addDurationToMoviesActionPerformed
+
+    private void morePopularItemsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_morePopularItemsActionPerformed
+        this.writeMorePopularItemsToFile();
+    }//GEN-LAST:event_morePopularItemsActionPerformed
+
+    private void EvaluationPopularityApproachActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EvaluationPopularityApproachActionPerformed
+        EvaluationPopularityApproach e = new EvaluationPopularityApproach();
+        try {
+            e.runEvaluation();
+        } catch (IOException ex) {
+            Logger.getLogger(StartForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_EvaluationPopularityApproachActionPerformed
+
+    private void ConvertAnimeRatingFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConvertAnimeRatingFileActionPerformed
+        fileManagerClasses.ConvertFile c = new fileManagerClasses.ConvertFile();
+        c.convertAnimeRatignsFile();
+    }//GEN-LAST:event_ConvertAnimeRatingFileActionPerformed
 
     public void loadFilesButtonAction() {
         initialStaticValues();
@@ -700,8 +805,7 @@ public class StartForm extends javax.swing.JFrame {
         return null;
     }
 
-    
-   //It prints ratings Per User per 100 records
+    //It prints ratings Per User per 100 records
     public void printRatings() {
         try {
             Integer b = jTable_Ratings.getRowCount();
@@ -725,10 +829,10 @@ public class StartForm extends javax.swing.JFrame {
                     //List<MovieRating> movieRatingsList = new ArrayList<MovieRating>();
                     List<ItemRating> movieRatingsList = fileManagerClasses.ReadFiles.ratingsPerUser_list.get(i).getItemRatingList();
                     String temp_text = "";
-                    
+
                     //Iterator<MovieRating> itr = movieRatingsList.iterator();
                     //while (itr.hasNext()) {
-                    for(int r=0; r<movieRatingsList.size(); r++){
+                    for (int r = 0; r < movieRatingsList.size(); r++) {
                         //MovieRating movieRating_temp = new MovieRating();
                         //MovieRating movieRating_temp = itr.next();
                         //temp_text += "[" + movieRating_temp.getMovieID() + ", " + movieRating_temp.getRating() + "] ";
@@ -744,7 +848,6 @@ public class StartForm extends javax.swing.JFrame {
         }
     }
 
-    
     public void printAllRatings() {
         //delete rows
         Integer b = jTable_Ratings.getRowCount();
@@ -767,10 +870,32 @@ public class StartForm extends javax.swing.JFrame {
         }
     }
 
-    
+    public void writeMorePopularItemsToFile() {
+        try {
+            ReadFiles readFiles = new ReadFiles();
+            readFiles.sortItemsList(1);
+            BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(morePopularItemsDataFile));
+            int count = 0;
+            double ratingBasedOnPopularity = 5.0;
+            int maxPopularity = ReadFiles.movies_list.get(0).getPopularity();
+            for (Item movie_temp : ReadFiles.movies_list) {
+                int movieID = movie_temp.getItemID();
+                int moviePopularity = movie_temp.getPopularity();
+                //double movieRating = ratingBasedOnPopularity;
+                double movieRating = ((double) moviePopularity / (double) maxPopularity) * 5.0;
+                bufferWriter.write(movieID + "," + movieRating + "\n");
+                ratingBasedOnPopularity -= 0.00125;
+            }
+            bufferWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
     //print items, sortingMode=0 -->sorting by movie Id, else --> sorting by item popularity
     public void printAllMovies(int sortingMode) {
-        ReadFiles  readFiles = new  ReadFiles();
+        ReadFiles readFiles = new ReadFiles();
         readFiles.sortItemsList(sortingMode);
         //delete rows
         Integer b = jTable_movies.getRowCount();
@@ -794,8 +919,6 @@ public class StartForm extends javax.swing.JFrame {
         }
     }
 
-    
-    
     //it prints items per 100 records
     public void printItems() {
         Integer b = jTable_movies.getRowCount();
@@ -840,93 +963,6 @@ public class StartForm extends javax.swing.JFrame {
         }
     }
 
-    
-    
- /*
-    
-    //testing the running time of reading a list
-    public void testRunningTimeOfList() {
-        long start;// = System.currentTimeMillis(); 
-        long d1 = 0;
-        long d2 = 0;
-        long d3 = 0;
-        long d4 = 0;
-        long d5 = 0;
-        int size = 0;
-        int j = 1;
-        int k = 1;
-        Iterator<RatingsPerUser> itr;
-       // while (k < 11) {
-           // while (j < 10001) {
-                start = System.nanoTime(); //currentTimeMillis();
-                size = ReadFiles.ratingsPerUser_list.size();
-                d1 += System.nanoTime() - start;
-
-                
-                start = System.nanoTime();
-                for (RatingsPerUser temp : ReadFiles.ratingsPerUser_list) {
-                }
-                d4 += System.nanoTime() - start;
-
-                
-                start = System.nanoTime();
-                itr = ReadFiles.ratingsPerUser_list.iterator();
-                while (itr.hasNext()) {
-                    RatingsPerUser temp = itr.next();
-                }
-                d5 += System.nanoTime() - start;
-
-                
-                start = System.nanoTime();
-                for (int i = 0; i < ReadFiles.ratingsPerUser_list.size(); i++) {
-                    RatingsPerUser temp = ReadFiles.ratingsPerUser_list.get(i);//vieRatings temp = ratingsPerUser_list.get(i);
-                }
-                d3 += System.nanoTime() - start;
-
-                
-                start = System.nanoTime();
-                size = ReadFiles.ratingsPerUser_list.size();
-                for (int i = 0; i < size; i++) {
-                    RatingsPerUser temp = ReadFiles.ratingsPerUser_list.get(i);//vieRatings temp = ratingsPerUser_list.get(i);
-                }
-                d2 += System.nanoTime() - start;
-         //       j++;
-           // }
-          //  k++;
-       // }
-        System.out.println("1_list size(): time = " + d1/1000);
-        System.out.println("2_classic for with pre-size: time = " + d2/1000);
-        System.out.println("3_classic for: time = " + d3/1000);
-        System.out.println("4_for with (:) : time = " + d4/1000);
-        System.out.println("3_Iterator: time = " + d5/1000);
-        System.out.println(" ");
-    }
-*/
-
-/*
-        public void printAllMovies_old() {
-        //delete rows
-        Integer b = jTable_movies.getRowCount();
-        for (int i = 0; i < b; i++) {
-            ((DefaultTableModel) jTable_movies.getModel()).removeRow(0);
-        }
-        Enumeration<Integer> keys = fileManagerClasses.ReadFiles.movies_hashTable.keys();
-        while (keys.hasMoreElements()) {
-            int key = keys.nextElement();
-            int movieID = fileManagerClasses.ReadFiles.movies_hashTable.get(key).getMovieID();
-            int maxAppearancesPerMovie = fileManagerClasses.ReadFiles.movies_hashTable.get(key).getNumOfMaxAppearances();
-             int moviePopularity = fileManagerClasses.ReadFiles.movies_hashTable.get(key).getPopularity();
-            String title = fileManagerClasses.ReadFiles.movies_hashTable.get(key).getTitle();
-            String[] genres = fileManagerClasses.ReadFiles.movies_hashTable.get(key).getGenres();
-            int numOfGenres = fileManagerClasses.ReadFiles.movies_hashTable.get(key).getNumOfGenres();
-            String temp_text = "";
-            for (String s : genres) {
-                temp_text += s + ", ";
-            }
-            ((DefaultTableModel) jTable_movies.getModel()).addRow(new Object[]{movieID, maxAppearancesPerMovie, moviePopularity, title, temp_text});
-        }
-    }
-    */
     /**
      * @param args the command line arguments
      */
@@ -964,9 +1000,13 @@ public class StartForm extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem A_Start;
+    private javax.swing.JMenuItem ConvertAnimeRatingFile;
+    private javax.swing.JMenuItem Evaluation;
+    private javax.swing.JMenuItem EvaluationOfGreedyAlgorithm;
+    private javax.swing.JMenuItem EvaluationPopularityApproach;
     private javax.swing.JMenuItem addCostToDatasetRandomly;
     private javax.swing.JMenu addCostToItems;
+    private javax.swing.JMenuItem addDurationToMovies;
     private javax.swing.JButton bt_chooseMoviesFile;
     private javax.swing.JButton bt_chooseRatingFile;
     private javax.swing.JButton bt_loadFiles;
@@ -980,6 +1020,7 @@ public class StartForm extends javax.swing.JFrame {
     private javax.swing.JButton button_printRatings;
     private javax.swing.JMenuItem cfInWholeDataset;
     private javax.swing.JButton jButton1;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -997,7 +1038,9 @@ public class StartForm extends javax.swing.JFrame {
     private javax.swing.JMenuItem menu_convertRatingsToMahoutFormat;
     private javax.swing.JMenuItem menu_exit;
     private javax.swing.JMenu menu_file;
+    private javax.swing.JCheckBoxMenuItem morePopularItems;
     private javax.swing.JTextField tx_itemsFile;
     private javax.swing.JTextField tx_ratingsFile;
+    private javax.swing.JMenuItem writeFileWithUsersForEvaluation;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,6 +7,7 @@ package recommend_and_evaluation;
 
 import entityBasicClasses.ItemRatingCost;
 import entityBasicClasses.Item_withCost;
+import entityBasicClasses.Measures;
 import entityBasicClasses.RatingsPerUser_v2;
 import formsAndFunctionality.StartForm;
 import java.io.BufferedReader;
@@ -34,54 +35,39 @@ public class A_Start {
 
     static public int currentUserID = 1;
     static public String lin_dataset = "/home/pkouris/Dropbox/EMP_DID_dropbox/PackageRecSys/Dataset/";
-    static public String win_dataset = "E:/Dropbox/EMP_DID_dropbox/PackageRecSys/Dataset/";
+    static public String win_dataset = "E:/Dataset/";
 
     static public String dataset = win_dataset; //It should be changed according to pc
     static public int selectedUserID = 1;
-    static public String ratingsDataFile = dataset + "m1m/ratings_converted.dat"; //default value
-    static public String ratingsCFDataPath = dataset + "m1m_cf_per_user/"; //path to predicted ratings (recommandations) per user
-    static public String trainingAndTestingRatings_DataPath = dataset + "m1m_ratings_per_user/"; //path to training and testing ratings per user
-    static public String itemsDataFile = dataset + "m1m/movies_converted_withCost.dat"; //default value
-
+    
+    //static public String ratingsDataFile = dataset + "m1m/ratings_converted.dat"; //default value
+    //static public String ratingsCFDataPath = dataset + "m1m_cf_per_user/"; //path to predicted ratings (recommandations) per user
+    //static public String trainingAndTestingRatings_DataPath = dataset + "m1m_ratings_per_user/"; //path to training and testing ratings per user
+    //static public String itemsDataFile = dataset + "m1m/movies_converted_withDuration.dat"; //default value
+    //static public String morePopularItemsDataFile = dataset + "m1m/movies_morePopular.dat"; //default value
+    
+    
+    
+    static public String ratingsDataFile = dataset + "anime/ratings_converted.dat"; //default value
+    static public String ratingsCFDataPath = dataset + "anime_cf_per_user/"; //path to predicted ratings (recommandations) per user
+    static public String trainingAndTestingRatings_DataPath = dataset + "anime_ratings_per_user/"; //path to training and testing ratings per user
+    static public String itemsDataFile = dataset + "anime/items_converted_withDuration.dat"; //default value
+    static public String morePopularItemsDataFile = dataset + "anime/items_morePopular.dat"; //default value
+    
+    
+    
+    
     public A_Start() {
     }
 
-    public void evaluationForUser(int userId, int k_folds) throws IOException {
-        selectedUserID = userId;
-        for (int f = 1; f < k_folds + 1; f++) {
-            String ratings_file = StartForm.ratingsDataFile;
-            String userTrainingRatings_file = trainingAndTestingRatings_DataPath + "" + userId + "_training_" + f + ".dat";
-            String userTestingRatings_file = trainingAndTestingRatings_DataPath + "" + userId + "_testing_" + f + ".dat";
-            String userCFDatafile_file = ratingsCFDataPath + "" + userId + "_recom_" + f + ".dat";  
-            this.loadFiles(userId, ratings_file, userTrainingRatings_file);
-            //this.printRatings();
-            //this.printItems();
-            
-            //B_RanningMode:
-            ///////////////////////////////
-            System.out.println("B_RanningMode:");
-            B_RunningMode b = new B_RunningMode();
-            b.applyRunningMode(userId, userTestingRatings_file, userCFDatafile_file);
-            //b.printRatings(1, userId);
-            //b.printActualRatings(0, userId);
-            //b.printPredictedRatings(0);
-            //b.printHiddenRatings(0);
-            
-            //C_ProblemModening:
-            //////////////////
-            System.out.println("\nC_ProblemModening:");
-            C_ProblemModeling c = new C_ProblemModeling() ;
-            c.loadGraphOfTopCategories(userId);
-           //c.print_NodesOfTopCategoriesGraph();
-            
-            //E_RecommendPackages:
-            System.out.println("\nE_RecommendPackages:");
-            E_RecommendPackages e = new E_RecommendPackages();
-            e.createPackages();
-            e.printSolution();
-            
-            
+     public void printAvgRatingsAndPrecisionPerPackage(double[] avgRatingsPerPackage, double[] precisionPerPackage, double avgPrecision, int numOfPackages) {
+        String[] heading = {"pack_no", "avgRating", "precision"};
+        System.out.format("%-15s%-15s%-15s\n", heading);
+        for (int i = 0; i < numOfPackages; i++) {
+            String[] row = {(i + 1) + "", avgRatingsPerPackage[i] + "", precisionPerPackage[i] + ""};
+            System.out.format("%-15s%-15s%-15s\n", row);
         }
+        System.out.println("avgPrecision: " + avgPrecision);
     }
 
     public void loadFiles(int userId, String ratings, String userRatings) {
@@ -89,6 +75,85 @@ public class A_Start {
         readRatingsFile(userId, ratings, userRatings);
     }
 
+    public void loadFiles_exceptUserId(int userId, String ratings) {
+        readItemsFile(itemsDataFile);
+        readRatingsFile_exceptUserId(userId, ratings);
+    }
+    
+    
+  
+    
+     //read ratings file using the Mahout format
+    public void loadUserRatings(int userId, String userRatings) {
+        //long start = System.currentTimeMillis();
+        //read the file (ratings.dat) line by line
+        try {
+            BufferedReader bf_ratings = new BufferedReader(new FileReader(userRatings));
+            
+            for (String line; (line = bf_ratings.readLine()) != null;) {
+                splitRatingsLine(line, -1);
+            }
+            bf_ratings.close();
+            
+            
+            writeRatingsPerUser_list();
+            //////////////////////
+            //long elapsedTime = System.currentTimeMillis() - start;
+            // System.out.println((double) elapsedTime / 1000.0 + "sec");
+            /////////////////
+            // } catch (IOException ex) {
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+    
+    
+    //read ratings file using the Mahout format, except current User
+    public void readRatingsFile_exceptUserId(int userId, String ratings) {
+        //long start = System.currentTimeMillis();
+        //read the file (ratings.dat) line by line
+        try {
+            ratingsPerUser_hashTable.clear();
+            BufferedReader bf_userRatings = new BufferedReader(new FileReader(ratings));
+            for (String line; (line = bf_userRatings.readLine()) != null;) {
+                splitRatingsLine(line, userId);
+            }
+            bf_userRatings.close();
+            //////////////////////
+            //long elapsedTime = System.currentTimeMillis() - start;
+            // System.out.println((double) elapsedTime / 1000.0 + "sec");
+            /////////////////
+            // } catch (IOException ex) {
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    
+    
+    
+    
+    
+    public void writeRatingsPerUser_list() {
+        ratingsPerUser_list.clear();
+        Enumeration<Integer> keys = ratingsPerUser_hashTable.keys();
+        while (keys.hasMoreElements()) {
+            int key = keys.nextElement();
+            RatingsPerUser_v2 temp = ratingsPerUser_hashTable.get(key);
+            ratingsPerUser_list.add(temp);
+        }
+    }
+
+    
+    
     //read ratings file using the Mahout format
     public void readRatingsFile(int userId, String ratings, String userRatings) {
         //long start = System.currentTimeMillis();
@@ -105,7 +170,7 @@ public class A_Start {
                 splitRatingsLine(line, userId);
             }
             bf_userRatings.close();
-            
+
             ratingsPerUser_list.clear();
             Enumeration<Integer> keys = ratingsPerUser_hashTable.keys();
             while (keys.hasMoreElements()) {
@@ -155,6 +220,8 @@ public class A_Start {
                 //int userID = Integer.valueOf(part[0]);
                 int movieID = Integer.valueOf(part[1]);
                 double rating = Double.valueOf(part[2]);
+                ///////////////
+                //System.out.println("movieId:" + movieID);
                 double cost = movies_hashTable.get(movieID).getCost();
                 if (rating > maxValueOfRating) {
                     maxValueOfRating = rating;
@@ -181,6 +248,7 @@ public class A_Start {
             }
 
         } catch (Exception e) {
+            System.out.println("errorn in line: " + line);
             e.printStackTrace();
             return;
         }
@@ -209,13 +277,16 @@ public class A_Start {
             int movieID = Integer.parseInt(part[0].replaceAll("[\\D]", ""));
             String title = part[1];
             String[] genres = part[2].split("\\|");
-            double cost = Double.parseDouble(part[3]);
+            double cost = (double) Double.parseDouble(part[3].replaceAll("[\\D]", ""));
             //  if (!part[3].equals("")) {
             //      numOfMaxAppearances = convertStringToInt(part[3]);
             //  }
+            ///////////////////////
+            //System.out.println("movieId: " + movieID + " cost: " + cost);
             Item_withCost item = new Item_withCost(movieID, title, genres, genres.length, numOfMaxAppearances, 0, cost);
             return item;
         } catch (Exception e) {
+            System.out.println("error in line: " + line);
             e.printStackTrace();
             return null;
         }

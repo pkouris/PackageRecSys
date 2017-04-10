@@ -8,12 +8,23 @@
         <dependency>
             <groupId>cplex</groupId>
             <artifactId>cplex</artifactId>
-            <version>12.2</version>
+            <version>12.6.3</version>
         </dependency> 
         <dependency>
             <groupId>org.apache.mahout</groupId>
             <artifactId>mahout-mr</artifactId>
             <version>0.12.2</version>
+        </dependency>
+       <!-- <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.1.5</version>
+            <type>jar</type>
+        </dependency>  -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
         </dependency>
     </dependencies>
     <packaging>jar</packaging>
@@ -50,5 +61,5 @@
             </plugin>
         </plugins>
     </build>
-    <name>PackageRecSys_v2l</name>
+    <name>PackageRecSys_v2g</name>
 </project>

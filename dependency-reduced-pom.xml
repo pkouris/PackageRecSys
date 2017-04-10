@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.pk</groupId>
   <artifactId>PackageRecSys</artifactId>
-  <name>PackageRecSys_v2</name>
+  <name>PackageRecSys_v2g</name>
   <version>1.0-SNAPSHOT</version>
   <build>
     <plugins>

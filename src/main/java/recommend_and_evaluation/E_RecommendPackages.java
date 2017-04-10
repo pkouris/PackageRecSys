@@ -6,6 +6,7 @@
 package recommend_and_evaluation;
 
 import entityBasicClasses.ItemForPackage_v2;
+import entityBasicClasses.RatingsCost_OfPackage;
 import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,7 +18,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
-import linearProgrammingClasses.LinearProgramming_v2;
+import linearProgrammingClasses.LinearProgramming_v2_int;
 import linearProgrammingClasses.SolutionType_v2;
 import static recommend_and_evaluation.C_ProblemModeling.vertexItemOfTopCategories_list;
 import static recommend_and_evaluation.C_ProblemModeling.vertexTopCategory_list;
@@ -35,13 +36,17 @@ public class E_RecommendPackages {
     static public Hashtable<Integer, Hashtable<String, List<ItemForPackage_v2>>> packages_hashTable = new Hashtable<>();
 
     public E_RecommendPackages() {
+        //overallRunningTime = 0;
     }
 
-    //Load packages in packages_hashTable. Key is the package number
-    public void createPackages() {
+    //Load packages in packages_hashTable. Key is the package number, it returns the running time.
+    public double[] createPackages() {
+        double[] runningTime = null;
         try {
+            
             int numOfPackages = C_ProblemModeling.numOfPackages;
             int numOfCategories = C_ProblemModeling.numOfTopCategories;
+            runningTime = new double[numOfPackages];
             //int numOfItemsPerCategory = C_ProblemModeling.numOfItemsPerCategory;
             //modelOfPackage = 1: remove the edge with maximum rating
             //modelOfPackage = 2: remove the edge with minimum rating
@@ -58,17 +63,23 @@ public class E_RecommendPackages {
             //the hashTable of the solution with movies. 
             this.packages_hashTable.clear(); //The key of the hashTable is the number of package
             //for each package run min cost flow algorithm and create packages
+            overallRunningTime = 0;
             for (int p = 0; p < numOfPackages; p++) { //package number = p+1
+                long startTime = System.currentTimeMillis();
                 try {
                     if (runMinCostFlow(p, numOfCategories) == 0) {
-                        C_ProblemModeling.numOfPackages = p;
+                        //runningTime[p] = overallRunningTime;
+                        //C_ProblemModeling.numOfPackages = p;
                         break;
                     }
+                    runningTime[p] = overallRunningTime + (System.currentTimeMillis() - startTime);
+                    overallRunningTime = (long) runningTime[p];
+                    
                 } catch (Exception e) {
-                    C_ProblemModeling.numOfPackages = p;
+                    //C_ProblemModeling.numOfPackages = p;
                     System.out.println(overallRunningTime + " msec");
                     System.out.println("\n Exception: " + e);
-                    return;
+                    return runningTime;
                 }
                 //if the modelOfCreatingPackages == 1 or 2, the maximum or minimum rating edge will be removed from the graph
                 double ratingOfRemovingEdge = 0.0;
@@ -207,9 +218,10 @@ public class E_RecommendPackages {
                 }
             }//close for(packageNubler)
             System.out.println(overallRunningTime + " msec");
+            return runningTime;
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            return runningTime;
         }
     }
 
@@ -217,13 +229,13 @@ public class E_RecommendPackages {
     //it returns 1 on succeed or 0 on failure (no feasible solution)
     public int runMinCostFlow(int packageNumber, int numOfCategories) {
         try {
-            LinearProgramming_v2 linearProgramming = new LinearProgramming_v2();
+            LinearProgramming_v2_int linearProgramming = new LinearProgramming_v2_int();
             solutionOfProblem = null;
-            long startTime = System.currentTimeMillis();
+           // long startTime = System.currentTimeMillis();
             solutionOfProblem = linearProgramming.linearProgrammingCalc(); //run min cost flow problem
-            long runningTime = System.currentTimeMillis() - startTime;
+           // long runningTime = System.currentTimeMillis() - startTime;
             if (solutionOfProblem == null && packageNumber == 0) {
-                this.overallRunningTime += runningTime;
+                //this.overallRunningTime += runningTime;
                 System.out.println("No feasible solution!");
                 return 0;
             } else if (solutionOfProblem == null && packageNumber > 0) {
@@ -234,12 +246,12 @@ public class E_RecommendPackages {
                 }
                 return 0;
             } else if (packageNumber == 0) {
-                this.overallRunningTime += runningTime;
-                printStatisticsAndSolution(packageNumber, numOfCategories, runningTime);
+                //this.overallRunningTime += runningTime;
+                //printStatisticsAndSolution(packageNumber, numOfCategories, runningTime);
                 System.out.println("Optimal Solution Found!");
             } else {
-                this.overallRunningTime += runningTime;
-                printStatisticsAndSolution(packageNumber, numOfCategories, runningTime);
+            //    this.overallRunningTime += runningTime;
+                //printStatisticsAndSolution(packageNumber, numOfCategories, runningTime);
             }
             return 1;
         } catch (Exception e) {
@@ -370,7 +382,7 @@ public class E_RecommendPackages {
 
         }//close --> else if (modelOfPackage == 7)      
     }
-
+    
     public void printSolution() {
         try {
             //print the solution
@@ -426,6 +438,48 @@ public class E_RecommendPackages {
         }
     }
 
+    
+
+    public RatingsCost_OfPackage RatingsAndCostPerPackage() {
+        try {
+            
+            RatingsCost_OfPackage[] ratingsCost_ofPackage = null;
+            double[] ratingPerPackage = new double[C_ProblemModeling.numOfPackages];
+            double[] costPerPackage = new double[C_ProblemModeling.numOfPackages];
+            double sumOfRatings = 0.0;
+            double sumOfCost = 0.0;
+            for (int k = 0; k < C_ProblemModeling.numOfPackages; k++) {
+                Hashtable<String, List<ItemForPackage_v2>> category_movieForPackage_hashTable = packages_hashTable.get(k + 1);
+                Enumeration<String> categoryKeys = category_movieForPackage_hashTable.keys();
+                //int countItemsPerPackage = 0; //item number
+                while (categoryKeys.hasMoreElements()) {
+                    List<ItemForPackage_v2> movieForPackage_list = new ArrayList<>();
+                    String category = categoryKeys.nextElement();
+                    movieForPackage_list = category_movieForPackage_hashTable.get(category);
+                    for (int i = 0; i < movieForPackage_list.size(); i++) {
+                        double rating = movieForPackage_list.get(i).getRating();
+                        double cost = movieForPackage_list.get(i).getItem_cost();
+                        //countItemsPerPackage++;
+                        sumOfRatings += rating;
+                        sumOfCost += cost;
+                    }
+                }
+                ratingPerPackage[k] =  sumOfRatings;
+                costPerPackage[k] = sumOfCost;
+                
+                sumOfRatings = 0.0;
+                sumOfCost = 0.0;
+            }
+             RatingsCost_OfPackage rc= new RatingsCost_OfPackage(ratingPerPackage, costPerPackage);
+            return rc;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    
+    
     public void printResultsToFile() {
         try {
             File resultFilePath_file = new File(A_Start.ratingsDataFile);

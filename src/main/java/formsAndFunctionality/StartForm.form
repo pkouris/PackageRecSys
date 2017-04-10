@@ -69,12 +69,68 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="kFoldsCrossValidationActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="A_Start">
+            <MenuItem class="javax.swing.JMenuItem" name="writeFileWithUsersForEvaluation">
               <Properties>
-                <Property name="text" type="java.lang.String" value="A_Start"/>
+                <Property name="text" type="java.lang.String" value="Write file with users for evaluation"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="A_StartActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="writeFileWithUsersForEvaluationActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="addDurationToMovies">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="add duration to movies"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addDurationToMoviesActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="morePopularItems">
+              <Properties>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="Write more popylar items to file"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="morePopularItemsActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="ConvertAnimeRatingFile">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Convert Anime Ratings File"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ConvertAnimeRatingFileActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Evaluation"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="Evaluation">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Evaluation optimal Approach"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="EvaluationActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="EvaluationOfGreedyAlgorithm">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Evaluation Greedy Approach"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="EvaluationOfGreedyAlgorithmActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="EvaluationPopularityApproach">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Evaluation Popularity Approach"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="EvaluationPopularityApproachActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -129,7 +185,7 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="jScrollPane2" pref="768" max="32767" attributes="0"/>
+              <Component id="jScrollPane2" pref="770" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -216,7 +272,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="jScrollPane3" pref="222" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane3" pref="223" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="66" max="-2" attributes="0"/>
@@ -355,7 +411,7 @@
                               <Component id="bt_sortItemsByPopularity" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" pref="228" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="229" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
                       </Group>
                   </Group>

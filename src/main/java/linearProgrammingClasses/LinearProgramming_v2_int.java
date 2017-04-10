@@ -13,7 +13,7 @@ import recommend_and_evaluation.C_ProblemModeling;
  * @author Panagiotis Kouris
  * @date Mar 2017
  */
-public class LinearProgramming_v2 {
+public class LinearProgramming_v2_int {
 
     /*
     public void main(String[] args) {
@@ -92,11 +92,11 @@ public class LinearProgramming_v2 {
                 C[i] = cc[i];
                 E[i] = ee[i];
                 I[i] = ii[i];
-
                 //////////////////////////
                 //System.out.println(E[i] + " :: " + I[i]);
             }
 
+            
             //A table for equations AX=0
             double[][] A = new double[numOfNodes][numOfEdges];
             for (int i = 0; i < numOfNodes; i++) {
@@ -121,7 +121,7 @@ public class LinearProgramming_v2 {
                 }
                 index++;
             }
-
+/*
             //ΣXic = itemsPerCategory, for each C 
             double[][] xic = new double[numOfCategoryNodes][numOfEdges];
             for (int i = 0; i < numOfCategoryNodes; i++) {
@@ -129,22 +129,22 @@ public class LinearProgramming_v2 {
                     xic[i][j] = 0.0;//ΣXic = itemsPerCategory, for each C 
                 }
             }
-
+*/
             //Category Nodes
             for (int i = 0; i < numOfCategoryNodes; i++) {
                 List<EdgeItemCategory_v2> edgeMovieCategory_list_temp = new ArrayList<>();
                 edgeMovieCategory_list_temp = C_ProblemModeling.vertexTopCategory_list.get(i).getEdgeMovieCategory_list();
                 int size = edgeMovieCategory_list_temp.size();
                 //////////////
-                System.out.println("size = " + size);
+                //System.out.println("size = " + size);
                 for (int j = 0; j < size; j++) {
                     String str = edgeMovieCategory_list_temp.get(j).getItemID() + "_" + edgeMovieCategory_list_temp.get(j).getCategoryID();
                     int position = indexOfStrInTable(E, str, numOfEdges);
                     if (position > -1) {
                         A[index][position] = 1.0;
-                        xic[i][position] = 1.0;////ΣXic = itemsPerCategory, for each C 
+                        //xic[i][position] = 1.0;////ΣXic = itemsPerCategory, for each C 
                         ////////////////////////////////////////////////////
-                        System.out.println("IF = " + position + " " + xic[i][position] + " " +numOfCategoryNodes);
+                        ///System.out.println("IF = " + position + " " + xic[i][position] + " " +numOfCategoryNodes);
 
                     }
                 }
@@ -185,7 +185,7 @@ public class LinearProgramming_v2 {
             A[index][numOfEdges - 1] = 1.0;
             index++;
 
-            //////////////////////
+            /* //////////////////////
             System.out.println("xic:");
             for (int i = 0; i < numOfCategoryNodes; i++) {
                 System.out.println("\ncategoryNode:");
@@ -194,7 +194,7 @@ public class LinearProgramming_v2 {
                 }
                 //System.out.println();
             }
-
+            */
             ///////////////////////
             //CPLEX
             //try {
@@ -217,7 +217,7 @@ public class LinearProgramming_v2 {
                     //upperBound[i] = (double) numOfItemsPerCategory;
                 } else { //0.0 <= Xsource-sink <= numOfCategoryNodes*numOfPackages
                     /////////////////////////////////////////
-                    System.out.println("overallItemsOfCategories= " + overallItemsOfCategories);
+                    //System.out.println("overallItemsOfCategories= " + overallItemsOfCategories);
                     if (C_ProblemModeling.packageSize == 0) {
                         lowerBound[i] = (double) overallItemsOfCategories;
                         upperBound[i] = (double) overallItemsOfCategories;
@@ -227,8 +227,13 @@ public class LinearProgramming_v2 {
                     }
                 }
             }
+            IloNumVarType[] xt = new IloNumVarType[numOfEdges];//  = {IloNumVarType.Float, IloNumVarType.Float, IloNumVarType.Float, IloNumVarType.Int};
+            for (int j = 0; j < numOfEdges; j++) {
+                xt[j] = IloNumVarType.Int;
+            }
+            
             //Xi variables
-            IloNumVar[] x = cplex.numVarArray(numOfEdges, lowerBound, upperBound); //0.0 <= Xi < =1.0 
+            IloNumVar[] x = cplex.numVarArray(numOfEdges, lowerBound, upperBound, xt); //0.0 <= Xi < =1.0 
             //Objective function 
             cplex.addMinimize(cplex.scalProd(x, C));
 
@@ -240,33 +245,16 @@ public class LinearProgramming_v2 {
                 }
                 IloRange con1 = cplex.addEq(a, 0.0);
             }
-/*
-            for (int i = 0; i < numOfCategoryNodes; i++) {
-                IloLinearNumExpr aa = cplex.linearNumExpr(); //lhs as in left hand side
-                for (int j = 0; j < numOfEdges; j++) {
-                    aa.addTerm(xic[i][j], x[j]);
-                }
-                IloRange conaa = cplex.addEq(aa, C_ProblemModeling.numOfItemsPerCategory);
-            }
-
+            
+            
+            
+            
             IloLinearNumExpr b = cplex.linearNumExpr();
             for (int j = 0; j < numOfEdges; j++) {
                 b.addTerm(I[j], x[j]); //add P*X 
             }
             IloRange con2 = cplex.addLe(b, C_ProblemModeling.packageCost); //add P*X <= packageCost
 
-            IloLinearNumExpr c = cplex.linearNumExpr();
-
-            for (int j = 0; j < numOfEdges; j++) {
-                c.addTerm(1, x[j]); //add 1*X = 4*flow
-            }
-            if (C_ProblemModeling.packageSize == 0) {
-                IloRange con3 = cplex.addEq(c, 4 * C_ProblemModeling.numOfTopCategories * C_ProblemModeling.numOfItemsPerCategory); //add X = 4*flow
-            } else {
-                IloRange con3 = cplex.addEq(c, 4 * C_ProblemModeling.packageSize); //add X = 4*flow
-            }
-            
-            */
             ////////////////////////////////
             System.out.println("packageSize " + C_ProblemModeling.packageSize);
 

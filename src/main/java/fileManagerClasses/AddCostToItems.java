@@ -11,10 +11,18 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Hashtable;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -24,8 +32,7 @@ public class AddCostToItems {
 
     public AddCostToItems() {
     }
-    
-    
+
     //It converts file to mahout format
     public String addCostToItemsRandomly(String inputFileName, int minCost, int maxCost) {
         String convertedFileName = "";
@@ -73,67 +80,92 @@ public class AddCostToItems {
         return convertedFileName;
     }
 
-    
-    
-    
-/*
-    //It converts file to mahout format
-    public String addCostToDatasetRandomly(String inputFileName, int minCost, int maxCost) {
+    //It adds duration to movies from http://www.omdbapi.com/?t=movie title
+    public String retrieveDurationOfMovies(String inputFileName) {
         String convertedFileName = "";
-        //removing the extension from inpute file and adding "_converted.dat"
-        int filename_len = inputFileName.length();
-        for (int i = 0; i < filename_len; i++) {
-            char c = inputFileName.charAt(i);
-            if (c == '.') {
-                break;
-            }
-            convertedFileName += c;
-        }
-        convertedFileName += "_withCost.dat";
         try {
-            //String inputFile = "C:\\movie_datasets\\ml1m\\ratings.dat";
+            //removing the extension from inpute file and adding "_converted.dat"
+            int len = inputFileName.length();
+            for (int i = 0; i < len; i++) {
+                char c = inputFileName.charAt(i);
+                if (c == '.') {
+                    break;
+                }
+                convertedFileName += c;
+            }
+            convertedFileName += "_withDuration.dat";
             BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFileName));
             BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(convertedFileName));
-            String line;
+            Random random = new Random();
+            int countLine = 0;
+            String line = "";
+            int count_errors = 0;
             while ((line = bufferedReader.readLine()) != null) {
-                int line_len = line.length();
-                String[] part = new String[]{"", "", ""};
-                int countOfPart = 0;
-                for (int i = 0; i < line_len; i++) {
-                    char c = line.charAt(i);
-                    if (c == ',') {
-                        countOfPart++;
-                    } else if (countOfPart == 0) {
-                        part[0] += c; //userId
-                    } else if (countOfPart == 1) {
-                        part[1] += c; //itemID
-                    } else if (countOfPart == 2) {
-                        part[2] += c; //rating
+                countLine++;
+                // String[] part = new String[]{"", "", ""};
+                String[] part = line.split("#");
+                if (part != null && part.length > 2) {
+                    String movieId = part[0].replaceAll("[\\D]", "");
+                    String title = part[1];
+                    String genres = part[2];//part[2].split("\\|");
+                    int maxCost = 120;
+                    int minCost = 70;
+                    int random_duration = random.nextInt(maxCost - minCost) + minCost;
+
+                    String modTitle = title.replaceAll(" ", "%20");
+                    String duration = "";
+                    try {
+                        JSONObject json = readJsonFromUrl("http://www.omdbapi.com/?t=" + modTitle);
+                        duration = json.getString("Runtime");
+                    } catch (Exception e) {
+                        System.out.println("error in line:" + countLine);
+                    };
+                    String dur = duration.replace(" min", "");
+                    if (dur.equals("") || dur.equals("N/A")) {
+                        dur = random_duration + "";
+                        count_errors++;
                     }
+                    System.out.println(countLine + " " + dur);
+
+                    bufferWriter.write(movieId + "#" + title + "#" + genres + "#" + dur + "\n");
                 }
-                //int userID = Integer.parseInt(part[0].replaceAll("[\\D]", ""));//repalce non digit with blank
-                //String[] values = line.split("::", -1);
-                Random random = new Random();
-                int random_duration = random.nextInt(maxCost - minCost) + minCost;
-                bufferWriter.write(part[0] + "," + part[1] + "," + part[2] + "," + random_duration + "\n");
             }
+            System.out.println("\n countErrors:" + count_errors);
             bufferedReader.close();
             bufferWriter.close();
         } catch (IOException e) {
-            Component frame = null;
-            //JOptionPane.showMessageDialog(frame, "Select a valid rating file please! \nError: "+e, "Message", JOptionPane.ERROR_MESSAGE);
-            JOptionPane.showMessageDialog(frame, "Select a valid rating file please!", "Message", JOptionPane.ERROR_MESSAGE);
-            Logger.getLogger(ReadFiles.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
+            //Logger.getLogger(ReadFiles.class.getName()).log(Level.SEVERE, null, e);
             return "";
         } catch (Exception e) {
-            Component frame = null;
-            //JOptionPane.showMessageDialog(frame, "Select a valid rating file please! \nError: "+e, "Message", JOptionPane.ERROR_MESSAGE);
-            JOptionPane.showMessageDialog(frame, "Select a valid rating file please!", "Message", JOptionPane.ERROR_MESSAGE);
-            System.out.println("ReadFiles.readRatings() Exception: " + e);
+            e.printStackTrace();
             return "";
         }
         return convertedFileName;
     }
-*/
+
+    //
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
     
+    //
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
+
+   
 }

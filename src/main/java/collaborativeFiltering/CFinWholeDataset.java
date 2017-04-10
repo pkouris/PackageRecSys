@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import recommend_and_evaluation.A_Start;
 
 /**
  * @author: Panagiotis Kouris
@@ -31,13 +32,51 @@ import javax.swing.JOptionPane;
  */
 public class CFinWholeDataset {
 
+    int[] animeUsers = {//5908, 5899, 5895, 5831, 5815,  5672, 5669, 5655, 5562, 5555, 
+         //5516, 5504, 5374, 5357,  5310, 5264, 5137, 5073, 4883, 4843,  
+         //4468, 4350, 4102, 3657, 3557,  3476, 3203, 3193, 3117, 3127,
+         //3040, 2951, 2820,  2701, 2695,  2378, 2200, 1530, 1522, 1497,  
+         //1456, 1287, 1176,  1019, 958,   771,  661,  446,  294,  226 
+        //6417, 6474, 6569, 6618, 7249, 7421, 7659, 7670, 7824 
+        //7852, 8115, 8308, 10194
+        //10297, 10497, 10536, 10654
+             
+        
+        //11436, 11423, 11397, 11186, 11080, 10844
+    };
+    
     public CFinWholeDataset() {
     }
 
+    
+    
+    
+    public void applyCollaborativeFiltering(){
+        try {
+            cf_inSetOfUsers(A_Start.ratingsDataFile, animeUsers);
+        } catch (IOException ex) {
+            Logger.getLogger(CFinWholeDataset.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+    
+    //it writes in files the predicted ratings per user 
+    public void cf_inSetOfUsers(String ratingsFile, int[] setOfUsers) throws IOException {
+        int len = setOfUsers.length;
+        for (int i = 0; i < len; i++) {
+            String userTrainingDataPath = dataset + "anime_ratings_per_user/";
+            cF_ofKFoldsForUserId(5, setOfUsers[i], ratingsFile, userTrainingDataPath);
+            System.gc();
+        }
+        System.out.println ("End");
+    }
+    
+    
     //it writes in files the predicted ratings per user 
     public void cf_inWholeDatasetPerUser(String ratingsFile, int fromUser, int toUser) throws IOException {
         for (int u = fromUser; u < toUser+1; u++) {
-            String userTrainingDataPath = dataset + "m1m_ratings_per_user/";
+            String userTrainingDataPath = dataset + "anime_ratings_per_user/";
             cF_ofKFoldsForUserId(5, u, ratingsFile, userTrainingDataPath);
         }
     }
@@ -45,18 +84,18 @@ public class CFinWholeDataset {
     //cf in k-folds of userId and writing the file with recommendations
     public void cF_ofKFoldsForUserId(int k_folds, int userId, String datasetFile, String userTrainingDataPath) throws IOException {
         for (int f = 1; f < k_folds + 1; f++) {
-            System.out.println(userId +" of 6041: " + f + " of " +k_folds);
+            System.out.println(userId + " " + f + " of " +k_folds);
             String kFold_userTrainingDatafile = userTrainingDataPath + "" + userId + "_training_" + f + ".dat";
             //recItemRatingList = new ArrayList();
             List<ItemRating> recomItemRatingList = cF_forUserId(userId, datasetFile, kFold_userTrainingDatafile);
             
             //listOf_itemRatingLists.add(temp);
-            String cfUserRecommendationsFile = dataset + "m1m_cf_per_user/" + userId + "_recom_" + f + ".dat";
+            String cfUserRecommendationsFile = dataset + "anime_cf_per_user/" + userId + "_recom_" + f + ".dat";
             BufferedWriter bw = new BufferedWriter(new FileWriter(cfUserRecommendationsFile));
             int size_recItemRatingList = recomItemRatingList.size();
             for (int s = 0; s < size_recItemRatingList; s++) {
                 ItemRating temp = recomItemRatingList.get(s);
-                bw.write(temp.getItemID() + "," + round(temp.getRating(), 12) + "\n");
+                bw.write(temp.getItemID() + "," + temp.getRating() + "\n");
                 //////////////////
                 //System.out.println(temp.getItemID() + "," + temp.getRating());
             }

@@ -9,7 +9,7 @@ package entityBasicClasses;
  * @author: Panagiotis Kouris
  * date: Dec 2015
  */
-public class Measures {
+public class Measures_v2 {
     int TP_perPackage[];
     int FN_perPackage[];
     int FP_perPackage[];
@@ -17,11 +17,12 @@ public class Measures {
     int FN_overall;
     int FP_overall;
     double[] precision_perPackage;
+    double[] mod_precision_perPackage;
     double[] recall_perPackage;
     double precision_overall;
     double recall_overall;
 
-    public Measures(int[] TP_perPackage, int[] FN_perPackage, int[] FP_perPackage, int TP_overall, int FN_overall, int FP_overall, double[] precision_perPackage, double[] recall_perPackage, double precision_overall, double recall_overall) {
+    public Measures_v2(int[] TP_perPackage, int[] FN_perPackage, int[] FP_perPackage, int TP_overall, int FN_overall, int FP_overall, double[] precision_perPackage, double[] mod_precision_perPackage, double[] recall_perPackage, double precision_overall, double recall_overall) {
         this.TP_perPackage = TP_perPackage;
         this.FN_perPackage = FN_perPackage;
         this.FP_perPackage = FP_perPackage;
@@ -29,9 +30,18 @@ public class Measures {
         this.FN_overall = FN_overall;
         this.FP_overall = FP_overall;
         this.precision_perPackage = precision_perPackage;
+         this.mod_precision_perPackage = mod_precision_perPackage;
         this.recall_perPackage = recall_perPackage;
         this.precision_overall = precision_overall;
         this.recall_overall = recall_overall;
+    }
+
+    public double[] getMod_precision_perPackage() {
+        return mod_precision_perPackage;
+    }
+
+    public void setMod_precision_perPackage(double[] mod_precision_perPackage) {
+        this.mod_precision_perPackage = mod_precision_perPackage;
     }
 
     
