@@ -7,6 +7,7 @@ package popularityApproach;
 
 import greedyApproach.*;
 import entityBasicClasses.*;
+import formsAndFunctionality.StartForm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import recommend_and_evaluation.B_RunningMode;
 import recommend_and_evaluation.C_ProblemModeling;
 import recommend_and_evaluation.D_ItemsAllocationToCategories;
 import static recommend_and_evaluation.E_RecommendPackages.packages_hashTable;
+import recommend_and_evaluation.F_Evaluation;
 
 /**
  * @author Panagiotis Kouris
@@ -29,8 +31,8 @@ public class EvaluationPopularityApproach {
     static List<EvaluationResultsType> evaluationResults_list = new ArrayList<>();
     static AvgEvaluationResultsType Avg_evaluationResults = new AvgEvaluationResultsType();
     static int minRatingForModifiedPrecision = 4;
-
-    
+/*
+    //User ids have been chosen randomly
     int[] movielens = 
         {149,  202, 482,   531,  660,  699,  710,   721,  802,   869, 
          877, 1010, 1112, 1125, 1137, 1264, 1266, 1451, 1579, 1635, 
@@ -38,7 +40,7 @@ public class EvaluationPopularityApproach {
         3182, 3285, 3336, 3475, 3610, 3626, 3942, 4089,  4277, 4579,    
         4673, 4728, 4732, 4979, 5100, 5306, 5329, 5367, 5394, 5433};
     
-    
+   //User ids have been chosen randomly 
   int[] anime = {
          11410, 10536,   8308,  8115, 7852, 7670,  7421,  6569,     
          5908,  5899,  5895,  5831,  5669,  5655, 5562, 5555,  5516,  5374,      
@@ -46,9 +48,9 @@ public class EvaluationPopularityApproach {
          3127,  3040,  2951,  2820,  2701,  2695, 2378, 2200,  1530,  1522,  
          1497,  1456,  1287,  1176,  958,   771,  661,  446,   294,   226};
     
+    */
     
-    
-    int[] evaluationUsersId = anime;
+    int[] evaluationUsersId = F_Evaluation.evaluationUsersId;  //It should be changed to specific dataset
  
 
     public EvaluationPopularityApproach() {
@@ -111,7 +113,7 @@ public class EvaluationPopularityApproach {
             for (int f = 1; f < k_folds + 1; f++) {
                 String userTrainingRatings_file = A_Start.trainingAndTestingRatings_DataPath + "" + userId + "_training_" + f + ".dat";
                 String userTestingRatings_file = A_Start.trainingAndTestingRatings_DataPath + "" + userId + "_testing_" + f + ".dat";
-                String userCFDatafile_file = A_Start.dataset + "anime/items_morePopular.dat";
+                String userCFDatafile_file = A_Start.morePopularItemsDataFile;//A_Start.dataset + "" + StartForm.datafile +"/items_morePopular.dat";
                 a_start.loadUserRatings(userId, userTrainingRatings_file);
                 //this.printRatings();
                 //this.printItems();

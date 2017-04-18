@@ -447,7 +447,7 @@ public class EvaluationMeasuresForm extends javax.swing.JFrame {
 
     private void menu_aboutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_aboutMouseClicked
         Component frame = null;
-        JOptionPane.showMessageDialog(frame, "PackageRecSys v1.0\nCopyright © Panagiotis Kouris , 2016\nHarokopio University of Athens (HUA)\nAll rights reserved", "About Software", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(frame, "PackageRecSys v1.0\nCopyright © Panagiotis Kouris, 2017\nNTUA and HUA\nAll rights reserved", "About Software", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_menu_aboutMouseClicked
 
     public void windowOpeningAciton() {

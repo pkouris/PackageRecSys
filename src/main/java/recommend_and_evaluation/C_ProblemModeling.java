@@ -53,7 +53,7 @@ public class C_ProblemModeling {
     static public int categoryPopularity_mode = 1;
     static public String categoryPopularity_mode_str = "Based on the number of items per category";
     static public int packageSize = 0; //if package Size>0 then the items are allocated to categories proportionally
-    static public double packageCost = 60.0; //for movies it is minutes 
+    static public double packageCost = 1000.0; //for movies it is minutes 
 
     public C_ProblemModeling() {
     }

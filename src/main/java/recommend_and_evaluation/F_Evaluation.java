@@ -29,16 +29,9 @@ public class F_Evaluation {
     static AvgEvaluationResultsType Avg_evaluationResults = new AvgEvaluationResultsType();
     static int minRatingForModifiedPrecision = 4;
 
-    int[] evaluationUsersId_old
-            = {149,   202,  319,  331,   524,  528,  533,  566,  721,  777,
-                802,  877,  1010, 1088,  1112, 1117, 1266, 1422, 1449, 1451,
-                1579, 1676, 1764, 1778,  1835, 1880, 1889, 1920, 1926, 1958,
-                1980, 2010, 2077, 2109,  2484, 2793, 3163, 3401, 3576, 3681,
-                4682, 4728, 4732, 4957,  4979, 5111, 5113, 5306, 5329, 5367, 5394
-            };
-    
-    
-    int[] movielens = 
+   
+    //User ids have been chosen randomly
+    static int[] movielens = 
         {149,  202, 482,   531,  660,  699,  710,   721,  802,   869, 
          877, 1010, 1112, 1125, 1137, 1264, 1266, 1451, 1579, 1635, 
         1676, 1880, 1988, 2010, 2105, 2419, 2537, 2793, 2909,  2967, 
@@ -46,7 +39,8 @@ public class F_Evaluation {
         4673, 4728, 4732, 4979, 5100, 5306, 5329, 5367, 5394, 5433};
     
     
-    int[] anime = {
+    //User ids have been chosen randomly
+    static int[] anime = {
          11410, 10536,   8308,  8115, 7852, 7670,  7421,  6569,     
          5908,  5899,  5895,  5831,  5669,  5655, 5562, 5555,  5516,  5374,      
          5357,  5073,  4843,  4468,  4350,  3657, 3476, 3203,  3193,  3117, 
@@ -54,7 +48,7 @@ public class F_Evaluation {
          1497,  1456,  1287,  1176,  958,   771,  661,  446,   294,   226};
     
     
-    int[] evaluationUsersId = anime;
+    static public int[] evaluationUsersId = movielens; //It should be changed to specific dataset
  
 
     public F_Evaluation() {

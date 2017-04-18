@@ -7,7 +7,6 @@ package recommend_and_evaluation;
 
 import entityBasicClasses.ItemRatingCost;
 import entityBasicClasses.Item_withCost;
-import entityBasicClasses.Measures;
 import entityBasicClasses.RatingsPerUser_v2;
 import formsAndFunctionality.StartForm;
 import java.io.BufferedReader;
@@ -40,19 +39,30 @@ public class A_Start {
     static public String dataset = win_dataset; //It should be changed according to pc
     static public int selectedUserID = 1;
     
+    
+    //static String movielensDatafile = "m1m";
+    //static String animeDatafile = "anime";
+   
+    static String datafile= StartForm.datafile; // = movielensDatafile; //It should be changed according to the specific dataset
+    
+    
     //static public String ratingsDataFile = dataset + "m1m/ratings_converted.dat"; //default value
     //static public String ratingsCFDataPath = dataset + "m1m_cf_per_user/"; //path to predicted ratings (recommandations) per user
     //static public String trainingAndTestingRatings_DataPath = dataset + "m1m_ratings_per_user/"; //path to training and testing ratings per user
     //static public String itemsDataFile = dataset + "m1m/movies_converted_withDuration.dat"; //default value
     //static public String morePopularItemsDataFile = dataset + "m1m/movies_morePopular.dat"; //default value
     
+    static public String ratingsDataFile = dataset + "" + datafile + "/ratings_converted.dat"; //default value
+    static public String ratingsCFDataPath = dataset + "" + datafile + "_cf_per_user/"; //path to predicted ratings (recommandations) per user
+    static public String trainingAndTestingRatings_DataPath = dataset + "" + datafile + "_ratings_per_user/"; //path to training and testing ratings per user
+    static public String itemsDataFile = dataset + "" + datafile + "/items_converted_withDuration.dat"; //default value
+    static public String morePopularItemsDataFile = dataset + "" + datafile + "/items_morePopular.dat"; //default value
     
-    
-    static public String ratingsDataFile = dataset + "anime/ratings_converted.dat"; //default value
-    static public String ratingsCFDataPath = dataset + "anime_cf_per_user/"; //path to predicted ratings (recommandations) per user
-    static public String trainingAndTestingRatings_DataPath = dataset + "anime_ratings_per_user/"; //path to training and testing ratings per user
-    static public String itemsDataFile = dataset + "anime/items_converted_withDuration.dat"; //default value
-    static public String morePopularItemsDataFile = dataset + "anime/items_morePopular.dat"; //default value
+    //static public String ratingsDataFile = dataset + "" + datafile +"/ratings_converted.dat"; //default value
+    //static public String ratingsCFDataPath = dataset + "" + datafile +"_cf_per_user/"; //path to predicted ratings (recommandations) per user
+    //static public String trainingAndTestingRatings_DataPath = dataset + "" + datafile + "_ratings_per_user/"; //path to training and testing ratings per user
+    //static public String itemsDataFile = dataset + "" + datafile + "/items_converted_withDuration.dat"; //default value
+    //static public String morePopularItemsDataFile = dataset + "" + datafile + "/items_morePopular.dat"; //default value
     
     
     

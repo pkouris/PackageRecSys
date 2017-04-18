@@ -35,13 +35,22 @@ public class StartForm extends javax.swing.JFrame {
     static public String dataset = win_dataset; //It should be changed according to pc
     static public int selectedUserID = 1;
 
-    //static public String ratingsDataFile = dataset + "m1m/ratings_converted.dat"; //default value
-    //static public String itemsDataFile = dataset + "m1m/movies_converted_withDuration.dat"; //default value
-    //static public String morePopularItemsDataFile = dataset + "m1m/movies_morePopular.dat"; //default value
-    static public String ratingsDataFile = dataset + "anime/ratings_converted.dat"; //default value
-    static public String itemsDataFile = dataset + "anime/items_converted_withDuration.dat"; //default value
-    static public String morePopularItemsDataFile = dataset + "anime/items_morePopular.dat"; //default value
+    static String movielensDatafile = "m1m";
+    static String animeDatafile = "anime";
+   
+    static public String datafile = movielensDatafile; //It should be changed according to the specific dataset
+    
+    static public String ratingsDataFile = dataset + "" + datafile + "/ratings_converted.dat"; //default value
+    static public String itemsDataFile = dataset + "" + datafile + "/items_converted_withDuration.dat"; //default value
+    static public String morePopularItemsDataFile = dataset + "" + datafile + "/items_morePopular.dat"; //default value
+    //static public String ratingsDataFile = dataset + "anime/ratings_converted.dat"; //default value
+    //static public String itemsDataFile = dataset + "anime/items_converted_withDuration.dat"; //default value
+    //static public String morePopularItemsDataFile = dataset + "anime/items_morePopular.dat"; //default value
 
+    
+    
+    
+    
     static int minItemsPrint = 0;
     static int maxItemsPrint = 100;
     static int minRatingPrint = 0;
@@ -481,7 +490,7 @@ public class StartForm extends javax.swing.JFrame {
         });
         addCostToItems.add(writeFileWithUsersForEvaluation);
 
-        addDurationToMovies.setText("add duration to movies");
+        addDurationToMovies.setText("Add duration to movies");
         addDurationToMovies.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addDurationToMoviesActionPerformed(evt);
@@ -490,7 +499,7 @@ public class StartForm extends javax.swing.JFrame {
         addCostToItems.add(addDurationToMovies);
 
         morePopularItems.setSelected(true);
-        morePopularItems.setText("Write more popylar items to file");
+        morePopularItems.setText("Write more popular items to file");
         morePopularItems.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 morePopularItemsActionPerformed(evt);
@@ -510,7 +519,7 @@ public class StartForm extends javax.swing.JFrame {
 
         jMenu1.setText("Evaluation");
 
-        Evaluation.setText("Evaluation optimal Approach");
+        Evaluation.setText("Evaluation Optimal Approach");
         Evaluation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 EvaluationActionPerformed(evt);
@@ -667,7 +676,7 @@ public class StartForm extends javax.swing.JFrame {
 
     private void menu_aboutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menu_aboutMouseClicked
         Component frame = null;
-        JOptionPane.showMessageDialog(frame, "PackageRecSys v1.0\nCopyright © Panagiotis Kouris , 2016\nHarokopio University of Athens (HUA)\nAll rights reserved", "About Software", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(frame, "PackageRecSys v1.0\nCopyright © Panagiotis Kouris, 2017\nNTUA and HUA\nAll rights reserved", "About Software", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_menu_aboutMouseClicked
 
     private void menu_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_exitActionPerformed
